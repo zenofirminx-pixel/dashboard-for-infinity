@@ -1,916 +1,1286 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080808">
-
-  <title>Infinity — Centre de contrôle</title>
-
-  <style>
-    :root {
-      --bg: #080808;
-      --panel: #111111;
-      --border: #292929;
-      --gold: #d4af37;
-      --text: #f5f5f5;
-      --muted: #999999;
-      --red: #ff7777;
-      --green: #4ade80;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* IDENTITÉ INFINITY */
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 45px;
-      height: 45px;
-      border: 2px solid var(--gold);
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      color: var(--gold);
-      font-size: 30px;
-    }
-
-    .brand-name {
-      font-size: 20px;
-      letter-spacing: 2px;
-    }
-
-    .brand-name span {
-      color: var(--gold);
-    }
-
-    .eyebrow {
-      color: var(--gold);
-      font-size: 11px;
-      letter-spacing: 2px;
-      margin-bottom: 12px;
-    }
-
-    /* CONNEXION */
-
-    #loginScreen {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(
-          ellipse at 50% 20%,
-          rgba(212, 175, 55, 0.09),
-          transparent 55%
-        ),
-        var(--bg);
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 430px;
-      background: rgba(17, 17, 17, 0.96);
-      border: 1px solid #38301b;
-      border-radius: 20px;
-      padding: 35px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-    }
-
-    .login-brand {
-      justify-content: center;
-      margin-bottom: 38px;
-    }
-
-    .login-title {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-
-    .login-description {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-      margin-bottom: 30px;
-    }
-
-    .field {
-      margin-bottom: 19px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 9px;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #353535;
-      border-radius: 9px;
-      background: #090909;
-      color: white;
-      outline: none;
-    }
-
-    .field input:focus {
-      border-color: var(--gold);
-    }
-
-    .primary-button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 9px;
-      background: var(--gold);
-      color: #111;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    .primary-button:hover {
-      background: #f0cf66;
-    }
-
-    .primary-button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
-
-    .login-message {
-      margin-top: 16px;
-      color: var(--red);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .security-note {
-      margin-top: 25px;
-      text-align: center;
-      color: #777;
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    /* DASHBOARD */
-
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    aside {
-      width: 245px;
-      padding: 28px 19px;
-      background: #0d0d0d;
-      border-right: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .sidebar-brand {
-      margin-bottom: 45px;
-    }
-
-    .menu-label {
-      color: #666;
-      font-size: 11px;
-      letter-spacing: 2px;
-      margin-bottom: 13px;
-    }
-
-    .menu-item {
-      padding: 14px;
-      border-radius: 9px;
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
-
-    .menu-item.active {
-      color: var(--gold);
-      background: #29220f;
-      border: 1px solid #4b3b13;
-    }
-
-    .sidebar-footer {
-      margin-top: 45px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
-      overflow-wrap: anywhere;
-    }
-
-    main {
-      flex: 1;
-      min-width: 0;
-      padding: 35px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-    }
-
-    h1 {
-      font-size: 29px;
-      margin-bottom: 9px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .button {
-      padding: 12px 15px;
-      border-radius: 9px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .refresh-button {
-      background: var(--gold);
-      color: #111;
-      border: none;
-    }
-
-    .logout-button {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid #444;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 17px;
-      margin-bottom: 28px;
-    }
-
-    .stat-card {
-      padding: 23px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      border-radius: 14px;
-    }
-
-    .stat-title {
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 17px;
-    }
-
-    .stat-value {
-      font-size: 31px;
-      font-weight: bold;
-      overflow-wrap: anywhere;
-    }
-
-    .gold {
-      color: var(--gold);
-    }
-
-    .stat-note {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 10px;
-      line-height: 1.5;
-    }
-
-    .users-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 21px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .panel-header h2 {
-      font-size: 17px;
-    }
-
-    .search {
-      width: 290px;
-      max-width: 100%;
-      padding: 12px;
-      background: #080808;
-      color: white;
-      border: 1px solid #383838;
-      border-radius: 8px;
-      outline: none;
-    }
-
-    .search:focus {
-      border-color: var(--gold);
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      min-width: 650px;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th {
-      padding: 17px 20px;
-      color: var(--muted);
-      background: #0d0d0d;
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    td {
-      padding: 17px 20px;
-      border-top: 1px solid #242424;
-      font-size: 13px;
-      overflow-wrap: anywhere;
-    }
-
-    tbody tr:hover {
-      background: #181818;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .avatar {
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: #30270f;
-      color: var(--gold);
-      font-weight: bold;
-    }
-
-    .user-name {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .user-subtitle {
-      color: #777;
-      font-size: 11px;
-    }
-
-    .status {
-      color: var(--green);
-      font-size: 12px;
-    }
-
-    .message {
-      padding: 30px 20px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.7;
-    }
-
-    .message.error {
-      color: var(--red);
-    }
-
-    .panel-footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      flex-wrap: wrap;
-      padding: 16px 21px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    @media (max-width: 900px) {
-      aside {
-        width: 200px;
-      }
-
-      main {
-        padding: 24px 18px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .login-card {
-        padding: 25px 20px;
-      }
-
-      .layout {
-        display: block;
-      }
-
-      aside {
-        width: 100%;
-        padding: 17px;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .sidebar-brand {
-        margin-bottom: 20px;
-      }
-
-      .menu-label,
-      .sidebar-footer {
-        display: none;
-      }
-
-      .menu-item {
-        display: inline-block;
-        margin: 0;
-      }
-
-      main {
-        padding: 24px 14px;
-      }
-
-      h1 {
-        font-size: 25px;
-      }
-
-      .topbar {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .top-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .button {
-        padding: 12px 8px;
-      }
-
-      .panel-header {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .search {
-        width: 100%;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+
+    <title>Infinity — Administration</title>
+
+    <style>
+        :root {
+            --bg: #080808;
+            --panel: #111111;
+            --panel2: #181818;
+            --gold: #d8b45a;
+            --gold-light: #f1d78c;
+            --text: #f4f4f4;
+            --muted: #929292;
+            --border: #292929;
+            --red: #ff6b6b;
+            --green: #50d890;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .gold {
+            color: var(--gold);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border: 1px solid var(--gold);
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: var(--gold);
+            font-size: 31px;
+        }
+
+        .brand-name {
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* CONNEXION */
+
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 410px;
+            padding: 30px 25px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 20px 70px #00000080;
+        }
+
+        .login-heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-heading h1 {
+            font-size: 23px;
+            margin: 0;
+        }
+
+        .field {
+            margin-bottom: 19px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: #c9c9c9;
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            color: white;
+            background: #090909;
+            border: 1px solid #333;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: var(--gold);
+        }
+
+        .primary-button {
+            width: 100%;
+            padding: 14px;
+            color: #080808;
+            font-weight: 700;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(
+                135deg,
+                var(--gold-light),
+                var(--gold)
+            );
+        }
+
+        .primary-button:disabled {
+            opacity: .65;
+            cursor: wait;
+        }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .message.error {
+            display: block;
+            color: #ffb2b2;
+            background: #3a1515;
+            border: 1px solid #713030;
+        }
+
+        .message.success {
+            display: block;
+            color: #a7f5c8;
+            background: #10271b;
+            border: 1px solid #24583a;
+        }
+
+        .security-note {
+            margin-top: 22px;
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* DASHBOARD */
+
+        #dashboard {
+            min-height: 100vh;
+        }
+
+        .topbar {
+            min-height: 76px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .topbar .brand {
+            margin: 0;
+        }
+
+        .topbar .brand-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 26px;
+        }
+
+        .topbar .brand-name {
+            font-size: 21px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-label {
+            color: var(--muted);
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .secondary-button {
+            padding: 10px 14px;
+            color: var(--gold);
+            background: #171717;
+            border: 1px solid #383838;
+            border-radius: 9px;
+        }
+
+        .secondary-button:hover {
+            border-color: var(--gold);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 28px 20px 50px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            font-size: 26px;
+            margin: 0 0 8px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            margin-top: 18px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .status.online .status-dot {
+            background: var(--green);
+        }
+
+        .status.offline .status-dot {
+            background: var(--red);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 13px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--gold);
+            overflow-wrap: anywhere;
+        }
+
+        .users-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .panel-heading {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-heading h2 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 280px;
+            padding: 11px 13px;
+            color: white;
+            background: #090909;
+            border: 1px solid #333;
+            border-radius: 9px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--gold);
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #252525;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 500;
+            background: #141414;
+        }
+
+        td {
+            color: #e6e6e6;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tbody tr:hover {
+            background: #171717;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-email {
+            color: var(--gold-light);
+        }
+
+        .user-id {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .empty-state {
+            padding: 35px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .dashboard-message {
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            padding: 25px 10px;
+            text-align: center;
+            color: #696969;
+            font-size: 11px;
+        }
+
+        @media (max-width: 650px) {
+            .topbar {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 24px 13px 40px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 17px;
+            }
+
+            .stat-number {
+                font-size: 26px;
+            }
+
+            .panel-heading {
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            th, td {
+                padding: 14px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <!-- ÉCRAN DE CONNEXION -->
+    <!-- ÉCRAN DE CONNEXION -->
 
-  <section id="loginScreen">
-    <div class="login-card">
+    <section id="loginScreen">
+        <div class="login-card">
 
-      <div class="brand login-brand">
-        <div class="brand-icon">∞</div>
-        <div class="brand-name">INFI<span>NITY</span></div>
-      </div>
-
-      <div class="eyebrow">ACCÈS SÉCURISÉ</div>
-
-      <h1 class="login-title">Centre de contrôle</h1>
-
-      <p class="login-description">
-        Connecte-toi avec ton adresse administrateur et ton
-        mot de passe secret pour accéder au tableau de bord.
-      </p>
-
-      <form id="loginForm">
-        <div class="field">
-          <label for="email">Email administrateur</label>
-          <input
-            id="email"
-            type="email"
-            autocomplete="username"
-            placeholder="Ton adresse email"
-            required
-          >
-        </div>
-
-        <div class="field">
-          <label for="password">Mot de passe secret</label>
-          <input
-            id="password"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Ton mot de passe"
-            required
-          >
-        </div>
-
-        <button class="primary-button" id="loginButton" type="submit">
-          Se connecter
-        </button>
-
-        <div
-          id="loginMessage"
-          class="login-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
-      </form>
-
-      <div class="security-note">
-        ∞ Infinity Administration<br>
-        Accès réservé aux administrateurs autorisés.
-      </div>
-
-    </div>
-  </section>
-
-  <!-- CENTRE DE CONTRÔLE -->
-
-  <div id="dashboard" class="layout hidden">
-
-    <aside>
-      <div class="brand sidebar-brand">
-        <div class="brand-icon">∞</div>
-        <div class="brand-name">INFI<span>NITY</span></div>
-      </div>
-
-      <div class="menu-label">ADMINISTRATION</div>
-      <div class="menu-item active">◈ &nbsp; Utilisateurs</div>
-
-      <div class="sidebar-footer">
-        Centre de contrôle<br>
-        <span id="adminEmail"></span>
-      </div>
-    </aside>
-
-    <main>
-      <header class="topbar">
-        <div>
-          <div class="eyebrow">ESPACE ADMINISTRATEUR</div>
-          <h1>Centre de contrôle</h1>
-          <p class="subtitle">
-            Gère et consulte les utilisateurs d'Infinity.
-          </p>
-        </div>
-
-        <div class="top-actions">
-          <button
-            class="button refresh-button"
-            id="refreshButton"
-            type="button"
-          >
-            ↻ Actualiser
-          </button>
-
-          <button
-            class="button logout-button"
-            id="logoutButton"
-            type="button"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
-
-      <section class="stats">
-        <div class="stat-card">
-          <div class="stat-title">TOTAL DES UTILISATEURS</div>
-          <div class="stat-value gold" id="totalUsers">—</div>
-          <div class="stat-note">Comptes retournés par le serveur</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-title">COMPTES AVEC EMAIL</div>
-          <div class="stat-value" id="emailUsers">—</div>
-          <div class="stat-note">Adresses disponibles dans la réponse</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-title">CONNEXION AU SERVEUR</div>
-          <div class="stat-value" id="serverStatus">—</div>
-          <div class="stat-note" id="lastUpdate">En attente</div>
-        </div>
-      </section>
-
-      <section class="users-panel">
-        <div class="panel-header">
-          <h2>Liste des utilisateurs</h2>
-
-          <input
-            type="search"
-            id="searchInput"
-            class="search"
-            placeholder="Rechercher un nom ou un email..."
-            aria-label="Rechercher un utilisateur"
-          >
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Utilisateur</th>
-                <th>Adresse email</th>
-                <th>Identifiant</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-
-            <tbody id="usersTable">
-              <tr>
-                <td colspan="4">
-                  <div class="message">Chargement...</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="panel-footer">
-          <span id="resultsCount">0 utilisateur</span>
-          <span>Infinity Backend</span>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script>
-    const API_URL = "https://aur-x-backend.vercel.app/api/users/";
-
-    const loginScreen = document.getElementById("loginScreen");
-    const dashboard = document.getElementById("dashboard");
-    const loginForm = document.getElementById("loginForm");
-    const loginButton = document.getElementById("loginButton");
-    const loginMessage = document.getElementById("loginMessage");
-
-    const refreshButton = document.getElementById("refreshButton");
-    const logoutButton = document.getElementById("logoutButton");
-    const searchInput = document.getElementById("searchInput");
-    const usersTable = document.getElementById("usersTable");
-
-    let users = [];
-    let sessionToken = null;
-    let currentEmail = null;
-
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      })[char]);
-    }
-
-    function showLogin(message = "") {
-      sessionToken = null;
-      currentEmail = null;
-      users = [];
-
-      // Efface les informations de session du navigateur.
-      sessionStorage.removeItem("infinity_admin_session");
-
-      dashboard.classList.add("hidden");
-      loginScreen.classList.remove("hidden");
-
-      loginMessage.textContent = message;
-      document.getElementById("password").value = "";
-    }
-
-    function showDashboard() {
-      loginScreen.classList.add("hidden");
-      dashboard.classList.remove("hidden");
-
-      document.getElementById("adminEmail").textContent =
-        currentEmail || "";
-    }
-
-    async function login(email, password) {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ email, password }),
-        cache: "no-store"
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success || !data.token) {
-        throw new Error(data.error || "Connexion refusée.");
-      }
-
-      sessionToken = data.token;
-      currentEmail = data.email;
-
-      // Le token de session est stocké temporairement,
-      // jamais le mot de passe administrateur.
-      sessionStorage.setItem(
-        "infinity_admin_session",
-        JSON.stringify({
-          token: sessionToken,
-          email: currentEmail,
-          expiresAt: Date.now() + data.expiresIn
-        })
-      );
-
-      showDashboard();
-      await loadUsers();
-    }
-
-    loginForm.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      loginButton.disabled = true;
-      loginButton.textContent = "Vérification...";
-      loginMessage.textContent = "";
-
-      try {
-        await login(email, password);
-      } catch (error) {
-        showLogin(error.message || "Impossible de se connecter.");
-      } finally {
-        loginButton.disabled = false;
-        loginButton.textContent = "Se connecter";
-      }
-    });
-
-    function renderUsers() {
-      const query = searchInput.value.trim().toLowerCase();
-
-      const filtered = users.filter(user => {
-        return [
-          user.name,
-          user.email,
-          user.id
-        ].some(value =>
-          String(value || "").toLowerCase().includes(query)
-        );
-      });
-
-      document.getElementById("resultsCount").textContent =
-        `${filtered.length} utilisateur${filtered.length !== 1 ? "s" : ""}`;
-
-      if (!filtered.length) {
-        usersTable.innerHTML = `
-          <tr>
-            <td colspan="4">
-              <div class="message">
-                ${users.length
-                  ? "Aucun résultat pour cette recherche."
-                  : "Aucun utilisateur disponible."}
-              </div>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      usersTable.innerHTML = filtered.map(user => {
-        const name = user.name || "Utilisateur sans nom";
-        const email = user.email || "Email non disponible";
-        const id = user.id || "—";
-        const initial = (user.name || user.email || "?")
-          .trim()
-          .charAt(0)
-          .toUpperCase();
-
-        return `
-          <tr>
-            <td>
-              <div class="user-info">
-                <div class="avatar">${escapeHTML(initial)}</div>
-                <div>
-                  <div class="user-name">${escapeHTML(name)}</div>
-                  <div class="user-subtitle">Compte Infinity</div>
+            <div class="login-heading">
+                <div class="brand">
+                    <div class="brand-icon">∞</div>
+                    <div class="brand-name">INFINITY</div>
                 </div>
-              </div>
-            </td>
-            <td>${escapeHTML(email)}</td>
-            <td>${escapeHTML(id)}</td>
-            <td><span class="status">● Enregistré</span></td>
-          </tr>
-        `;
-      }).join("");
-    }
 
-    async function loadUsers() {
-      if (!sessionToken) {
-        showLogin();
-        return;
-      }
+                <h1>Centre de contrôle</h1>
 
-      refreshButton.disabled = true;
-      refreshButton.textContent = "Chargement...";
+                <div class="subtitle">
+                    Accès réservé à l'administration
+                </div>
+            </div>
 
-      document.getElementById("serverStatus").textContent = "…";
+            <form id="loginForm" novalidate>
 
-      usersTable.innerHTML = `
-        <tr>
-          <td colspan="4">
-            <div class="message">Chargement des utilisateurs...</div>
-          </td>
-        </tr>
-      `;
+                <div class="field">
+                    <label for="adminEmail">Adresse email</label>
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": `Bearer ${sessionToken}`
-          },
-          cache: "no-store"
+                    <input
+                        id="adminEmail"
+                        name="email"
+                        type="email"
+                        autocomplete="username"
+                        placeholder="Ton adresse email"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="adminPassword">
+                        Mot de passe administrateur
+                    </label>
+
+                    <input
+                        id="adminPassword"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        placeholder="Ton mot de passe"
+                        required
+                    >
+                </div>
+
+                <button
+                    id="loginButton"
+                    class="primary-button"
+                    type="submit"
+                >
+                    Se connecter
+                </button>
+
+                <div
+                    id="loginMessage"
+                    class="message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+            </form>
+
+            <div class="security-note">
+                Connexion sécurisée au serveur Infinity.<br>
+                Les identifiants ne sont pas enregistrés dans le navigateur.
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- DASHBOARD ADMINISTRATEUR -->
+
+    <section id="dashboard" class="hidden">
+
+        <header class="topbar">
+
+            <div class="brand">
+                <div class="brand-icon">∞</div>
+                <div class="brand-name">INFINITY</div>
+            </div>
+
+            <div class="top-actions">
+
+                <span id="adminIdentity" class="admin-label"></span>
+
+                <button
+                    id="refreshButton"
+                    class="secondary-button"
+                    type="button"
+                >
+                    Actualiser
+                </button>
+
+                <button
+                    id="logoutButton"
+                    class="secondary-button"
+                    type="button"
+                >
+                    Déconnexion
+                </button>
+
+            </div>
+
+        </header>
+
+        <main class="container">
+
+            <div class="page-heading">
+
+                <h1>
+                    Centre de contrôle <span class="gold">∞</span>
+                </h1>
+
+                <p>
+                    Gestion et consultation des comptes utilisateurs.
+                </p>
+
+                <div id="serverStatus" class="status">
+                    <span class="status-dot"></span>
+                    <span id="serverStatusText">
+                        Connexion au serveur...
+                    </span>
+                </div>
+
+            </div>
+
+            <div
+                id="dashboardMessage"
+                class="message dashboard-message"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <div class="stat-title">
+                        TOTAL UTILISATEURS
+                    </div>
+
+                    <div id="totalUsers" class="stat-number">—</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-title">
+                        ADRESSES EMAIL
+                    </div>
+
+                    <div id="totalEmails" class="stat-number">—</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-title">
+                        ÉTAT DU SERVEUR
+                    </div>
+
+                    <div
+                        id="serverState"
+                        class="stat-number"
+                        style="font-size:22px"
+                    >
+                        —
+                    </div>
+                </div>
+
+            </div>
+
+            <section class="users-panel">
+
+                <div class="panel-heading">
+
+                    <h2>Utilisateurs enregistrés</h2>
+
+                    <input
+                        id="userSearch"
+                        class="search-box"
+                        type="search"
+                        placeholder="Rechercher un utilisateur..."
+                        aria-label="Rechercher un utilisateur"
+                    >
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Identifiant</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="3" class="empty-state">
+                                    Chargement des utilisateurs...
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <div class="footer">
+                INFINITY · CENTRE D'ADMINISTRATION
+            </div>
+
+        </main>
+
+    </section>
+
+
+    <script>
+    (() => {
+        "use strict";
+
+        // =========================================
+        // CONFIGURATION
+        // =========================================
+
+        const API_URL =
+            "https://aur-x-backend.vercel.app/api/users/";
+
+        const SESSION_KEY = "infinity_admin_session";
+
+        let allUsers = [];
+        let isLoadingUsers = false;
+
+
+        // =========================================
+        // ÉLÉMENTS HTML
+        // =========================================
+
+        const loginScreen =
+            document.getElementById("loginScreen");
+
+        const dashboard =
+            document.getElementById("dashboard");
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const emailInput =
+            document.getElementById("adminEmail");
+
+        const passwordInput =
+            document.getElementById("adminPassword");
+
+        const loginButton =
+            document.getElementById("loginButton");
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+        const dashboardMessage =
+            document.getElementById("dashboardMessage");
+
+        const usersTableBody =
+            document.getElementById("usersTableBody");
+
+        const searchInput =
+            document.getElementById("userSearch");
+
+        const refreshButton =
+            document.getElementById("refreshButton");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+
+        // =========================================
+        // AFFICHAGE DES MESSAGES
+        // =========================================
+
+        function showMessage(element, message, type = "error") {
+            element.textContent = message;
+            element.className = "message " + type;
+        }
+
+        function hideMessage(element) {
+            element.textContent = "";
+            element.className = "message";
+        }
+
+        function describeError(error) {
+            if (!error) {
+                return "Une erreur inconnue est survenue.";
+            }
+
+            if (error.name === "TypeError") {
+                return (
+                    "Impossible de joindre le serveur. " +
+                    "Vérifie ta connexion et la configuration CORS."
+                );
+            }
+
+            return error.message ||
+                "Une erreur inconnue est survenue.";
+        }
+
+
+        // =========================================
+        // GESTION DES ÉCRANS
+        // =========================================
+
+        function showLogin(message = "") {
+            loginScreen.classList.remove("hidden");
+            dashboard.classList.add("hidden");
+
+            if (message) {
+                showMessage(loginMessage, message, "error");
+            } else {
+                hideMessage(loginMessage);
+            }
+
+            // On conserve les champs en cas d'erreur.
+            // Aucun effacement automatique des identifiants.
+        }
+
+        function showDashboard(email = "") {
+            loginScreen.classList.add("hidden");
+            dashboard.classList.remove("hidden");
+
+            document.getElementById("adminIdentity").textContent =
+                email ? "Connecté : " + email : "Administrateur";
+        }
+
+
+        // =========================================
+        // SESSION
+        // =========================================
+
+        function getSession() {
+            try {
+                const raw = sessionStorage.getItem(SESSION_KEY);
+
+                if (!raw) {
+                    return null;
+                }
+
+                const session = JSON.parse(raw);
+
+                if (
+                    !session ||
+                    !session.token ||
+                    !session.expiresAt ||
+                    Date.now() >= Number(session.expiresAt)
+                ) {
+                    sessionStorage.removeItem(SESSION_KEY);
+                    return null;
+                }
+
+                return session;
+
+            } catch (error) {
+                console.error("Lecture de session impossible :", error);
+
+                sessionStorage.removeItem(SESSION_KEY);
+
+                return null;
+            }
+        }
+
+        function saveSession(data, email) {
+            if (!data || !data.token) {
+                throw new Error(
+                    "Le serveur n'a pas renvoyé de jeton de connexion."
+                );
+            }
+
+            let expiresAt = Number(data.expiresAt);
+
+            // Le serveur peut éventuellement renvoyer
+            // une date au format ISO plutôt qu'un nombre.
+            if (!Number.isFinite(expiresAt)) {
+                expiresAt = Date.parse(data.expiresAt);
+            }
+
+            if (
+                !Number.isFinite(expiresAt) ||
+                expiresAt <= Date.now()
+            ) {
+                throw new Error(
+                    "Le serveur a renvoyé une session invalide ou expirée."
+                );
+            }
+
+            sessionStorage.setItem(
+                SESSION_KEY,
+                JSON.stringify({
+                    token: data.token,
+                    email: email,
+                    expiresAt: expiresAt
+                })
+            );
+        }
+
+
+        // =========================================
+        // LECTURE DES RÉPONSES DU SERVEUR
+        // =========================================
+
+        async function readResponse(response) {
+            const text = await response.text();
+
+            let data;
+
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch {
+                throw new Error(
+                    "Le serveur a renvoyé une réponse non JSON " +
+                    "(HTTP " + response.status + ")."
+                );
+            }
+
+            if (!response.ok) {
+                const serverMessage =
+                    data.message ||
+                    data.error ||
+                    data.details ||
+                    "";
+
+                if (response.status === 401) {
+                    throw new Error(
+                        serverMessage ||
+                        "Connexion refusée : identifiants incorrects " +
+                        "ou session invalide."
+                    );
+                }
+
+                if (response.status === 403) {
+                    throw new Error(
+                        serverMessage ||
+                        "Accès refusé : cette adresse n'est pas autorisée."
+                    );
+                }
+
+                if (response.status >= 500) {
+                    throw new Error(
+                        serverMessage ||
+                        "Erreur du serveur (HTTP " +
+                        response.status + ")."
+                    );
+                }
+
+                throw new Error(
+                    serverMessage ||
+                    "La requête a échoué (HTTP " +
+                    response.status + ")."
+                );
+            }
+
+            if (data.success === false) {
+                throw new Error(
+                    data.message ||
+                    data.error ||
+                    "Le serveur a refusé la requête."
+                );
+            }
+
+            return data;
+        }
+
+
+        // =========================================
+        // CONNEXION ADMINISTRATEUR
+        // =========================================
+
+        async function login(email, password) {
+            const response = await fetch(API_URL, {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await readResponse(response);
+
+            saveSession(data, email);
+
+            showDashboard(email);
+
+            hideMessage(loginMessage);
+
+            // Le mot de passe n'est jamais stocké.
+            passwordInput.value = "";
+
+            await loadUsers();
+        }
+
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            hideMessage(loginMessage);
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showMessage(
+                    loginMessage,
+                    "Remplis les deux champs pour continuer.",
+                    "error"
+                );
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Connexion en cours...";
+
+            try {
+                await login(email, password);
+
+            } catch (error) {
+                console.error("Erreur de connexion :", error);
+
+                // Si la connexion ou le chargement échoue,
+                // on affiche une erreur visible.
+                showMessage(
+                    loginMessage,
+                    describeError(error),
+                    "error"
+                );
+
+                // L'email et le mot de passe restent dans les champs.
+                // On ne réinitialise pas le formulaire.
+
+                const session = getSession();
+
+                if (session) {
+                    sessionStorage.removeItem(SESSION_KEY);
+                }
+
+                showLogin(describeError(error));
+
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Se connecter";
+            }
         });
 
-        const data = await response.json();
 
-        if (response.status === 401) {
-          showLogin("Ta session a expiré. Reconnecte-toi.");
-          return;
+        // =========================================
+        // ÉTAT DU SERVEUR
+        // =========================================
+
+        function setServerStatus(online, message) {
+            const status = document.getElementById("serverStatus");
+            const statusText =
+                document.getElementById("serverStatusText");
+
+            const serverState =
+                document.getElementById("serverState");
+
+            status.classList.remove("online", "offline");
+            status.classList.add(online ? "online" : "offline");
+
+            statusText.textContent = message;
+
+            serverState.textContent = online ? "CONNECTÉ" : "ERREUR";
+
+            serverState.style.color =
+                online ? "var(--green)" : "var(--red)";
         }
 
-        if (!response.ok || !data.success) {
-          throw new Error(data.error || "Erreur du serveur.");
+
+        // =========================================
+        // CHARGEMENT DES UTILISATEURS
+        // =========================================
+
+        async function loadUsers() {
+            if (isLoadingUsers) {
+                return;
+            }
+
+            isLoadingUsers = true;
+            refreshButton.disabled = true;
+            refreshButton.textContent = "Chargement...";
+
+            hideMessage(dashboardMessage);
+
+            usersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="empty-state">
+                        Chargement des utilisateurs...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const session = getSession();
+
+                if (!session) {
+                    throw new Error(
+                        "Ta session a expiré. Reconnecte-toi."
+                    );
+                }
+
+                const response = await fetch(API_URL, {
+                    method: "GET",
+
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": "Bearer " + session.token
+                    }
+                });
+
+                const data = await readResponse(response);
+
+                if (!Array.isArray(data.users)) {
+                    throw new Error(
+                        "La réponse du serveur ne contient pas " +
+                        "de liste d'utilisateurs valide."
+                    );
+                }
+
+                allUsers = data.users;
+
+                document.getElementById("totalUsers").textContent =
+                    Number.isFinite(Number(data.totalUsers))
+                        ? data.totalUsers
+                        : allUsers.length;
+
+                document.getElementById("totalEmails").textContent =
+                    allUsers.filter(user => user.email).length;
+
+                setServerStatus(
+                    true,
+                    "CONNEXION AU SERVEUR OK"
+                );
+
+                renderUsers(allUsers);
+
+            } catch (error) {
+                console.error(
+                    "Erreur de chargement des utilisateurs :",
+                    error
+                );
+
+                setServerStatus(false, "CONNEXION IMPOSSIBLE");
+
+                usersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="empty-state">
+                            Impossible de charger les utilisateurs.
+                        </td>
+                    </tr>
+                `;
+
+                showMessage(
+                    dashboardMessage,
+                    describeError(error),
+                    "error"
+                );
+
+                if (
+                    error.message &&
+                    error.message.toLowerCase().includes("session")
+                ) {
+                    sessionStorage.removeItem(SESSION_KEY);
+                    showLogin(error.message);
+                }
+
+            } finally {
+                isLoadingUsers = false;
+                refreshButton.disabled = false;
+                refreshButton.textContent = "Actualiser";
+            }
         }
 
-        users = Array.isArray(data.users) ? data.users : [];
 
-        document.getElementById("totalUsers").textContent =
-          data.totalUsers ?? users.length;
+        // =========================================
+        // AFFICHAGE DU TABLEAU
+        // =========================================
 
-        document.getElementById("emailUsers").textContent =
-          users.filter(user => user.email).length;
+        function renderUsers(users) {
+            usersTableBody.replaceChildren();
 
-        document.getElementById("serverStatus").textContent = "OK";
-        document.getElementById("serverStatus").className =
-          "stat-value gold";
+            if (!users.length) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
 
-        document.getElementById("lastUpdate"
+                cell.colSpan = 3;
+                cell.className = "empty-state";
+                cell.textContent = "Aucun utilisateur trouvé.";
+
+                row.appendChild(cell);
+                usersTableBody.appendChild(row);
+
+                return;
+            }
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                const emailCell = document.createElement("td");
+                const idCell = document.createElement("td");
+
+                const name = document.createElement("div");
+                name.className = "user-name";
+                name.textContent =
+                    user.name || user.displayName || "Utilisateur";
+
+                nameCell.appendChild(name);
+
+                emailCell.className = "user-email";
+                emailCell.textContent = user.email || "—";
+
+                idCell.className = "user-id";
+                idCell.textContent = user.id || "—";
+
+                row.appendChild(nameCell);
+                row.appendChild(emailCell);
+                row.appendChild(idCell);
+
+                usersTableBody.appendChild(row);
+            });
+        }
+
+
+        // =========================================
+        // RECHERCHE
+        // =========================================
+
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value
+                .trim()
+                .toLowerCase();
+
+            const filteredUsers = allUsers.filter(user => {
+                const name = String(
+                    user.name || user.displayName || ""
+                ).toLowerCase();
+
+                const email = String(
+                    user.email || ""
+                ).toLowerCase();
+
+                const id = String(
+                    user.id || ""
+                ).toLowerCase();
+
+                return (
+                    name.includes(query) ||
+                    email.includes(query) ||
+                    id.includes(query)
+                );
+            });
+
+            renderUsers(filteredUsers);
+        });
+
+
+        // =========================================
+        // BOUTONS
+        // =========================================
+
+        refreshButton.addEventListener("click", () => {
+            loadUsers();
+        });
+
+        logoutButton.addEventListener("click", () => {
+            sessionStorage.removeItem(SESSION_KEY);
+
+            allUsers = [];
+            searchInput.value = "";
+
+            document.getElementById("totalUsers").textContent = "—";
+            document.getElementById("totalEmails").textContent = "—";
+
+            passwordInput.value = "";
+
+            showLogin();
+
+            emailInput.focus();
+        });
+
+
+        // =========================================
+        // DÉMARRAGE
+        // =========================================
+
+        async function initialize() {
+            const session = getSession();
+
+            if (!session) {
+                showLogin();
+                return;
+            }
+
+            showDashboard(session.email || "");
+
+            await loadUsers();
+        }
+
+        initialize();
+
+    })();
+    </script>
+
+</body>
+</html>
