@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>Infinity Control Center</title>
+<style>
+:root{color-scheme:dark;--bg:#090909;--panel:#121212;--panel2:#181818;--line:#292929;--gold:#d8b45a;--gold2:#f0d58b;--text:#f4f1e8;--muted:#a6a39a;--danger:#ff7777;--green:#8ed6a0;--radius:17px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.42}
+svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hidden{display:none!important}.muted{color:var(--muted)}.gold{color:var(--gold)}.eyebrow{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:248px;padding:25px 17px;background:#0d0d0d;border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:5}
+.brand{display:flex;align-items:center;gap:12px;padding:0 9px 29px}.brandmark{width:42px;height:42px;border:1px solid #69552a;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#242016,#111);color:var(--gold)}.brandmark svg{width:26px;height:26px}.brandname{font-size:.97rem;font-weight:800;letter-spacing:.01em}.brandname small{display:block;color:var(--muted);font-weight:500;font-size:.72rem;margin-top:2px}
+.nav-label{padding:8px 11px;color:#77746d;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800}.nav{display:grid;gap:6px}.nav button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;border:1px solid transparent;border-radius:11px;background:transparent;color:#b4b1a9;text-align:left;transition:.18s}.nav button:hover{background:#191919;color:white}.nav button.active{background:linear-gradient(100deg,#2a2417,#191712);border-color:#493c20;color:var(--gold2)}.nav button span{flex:1}.nav .count{font-size:.7rem;color:var(--muted)}
+.side-bottom{margin-top:auto;padding:15px 10px 4px;border-top:1px solid var(--line)}.backend-mini{display:flex;align-items:center;gap:9px;font-size:.78rem;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#777;display:inline-block;flex:none}.dot.online{background:var(--green);box-shadow:0 0 10px #8ed6a055}.dot.offline{background:var(--danger)}
+.main{margin-left:248px;min-height:100vh;padding:27px clamp(18px,3.3vw,48px) 46px;max-width:1700px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-bottom:25px;border-bottom:1px solid var(--line)}.top-title h1{font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.2;margin:4px 0 5px;letter-spacing:-.035em}.top-title p{margin:0;color:var(--muted);font-size:.88rem}.top-actions{display:flex;gap:10px;align-items:center}.icon-btn,.btn{border:1px solid var(--line);border-radius:10px;background:#171717;color:var(--text);padding:10px 13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}.icon-btn{width:42px;height:42px;padding:0}.btn:hover,.icon-btn:hover{border-color:#65532d;background:#201d16}.btn.primary{background:var(--gold);color:#17130a;border-color:var(--gold);font-weight:800}.btn.primary:hover{background:var(--gold2)}.btn.danger{border-color:#5d2929;color:#ff9999}.btn.small{padding:7px 10px;font-size:.8rem}.user-pill{display:flex;align-items:center;gap:9px;padding-left:12px;border-left:1px solid var(--line);font-size:.83rem}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#2b2518;color:var(--gold);font-weight:800}
+.content{padding-top:26px}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:20px}.section-head h2{margin:4px 0;font-size:1.35rem;letter-spacing:-.025em}.section-head p{margin:0;color:var(--muted);font-size:.87rem}.status-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:.76rem;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{background:linear-gradient(145deg,#151515,#101010);border:1px solid var(--line);border-radius:var(--radius);padding:20px;min-width:0}.stat-top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:.83rem}.stat-icon{width:39px;height:39px;border-radius:12px;background:#292316;color:var(--gold);display:grid;place-items:center}.stat-value{font-size:2rem;font-weight:750;letter-spacing:-.05em;margin:15px 0 2px}.stat-foot{font-size:.78rem;color:var(--muted)}.wide{grid-column:1/-1}.panel-title{font-size:1rem;font-weight:750;margin:0 0 5px}.panel-desc{color:var(--muted);font-size:.83rem;margin:0 0 18px}.backend-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-top:1px solid var(--line)}.backend-row:first-of-type{border-top:0}.backend-info{display:flex;align-items:center;gap:12px}.backend-info strong{display:block;font-size:.9rem}.backend-info small{display:block;color:var(--muted);font-size:.77rem;margin-top:2px}.message{border:1px solid var(--line);background:#151515;border-radius:12px;padding:13px 15px;font-size:.86rem;color:var(--muted)}.message.error{border-color:#633333;color:#ffaaaa;background:#211313}.message.success{border-color:#31553a;color:#a5e7b2;background:#111c13}.placeholder{min-height:190px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:8px;color:var(--muted);padding:25px}.placeholder svg{width:31px;height:31px;color:#6e5a2c}.placeholder strong{color:var(--text);font-size:.95rem}.placeholder p{max-width:460px;margin:0;font-size:.82rem}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}.searchbox{position:relative;flex:1;max-width:440px}.searchbox svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#888;width:18px}.searchbox input{width:100%;border:1px solid var(--line);background:#121212;border-radius:11px;padding:12px 13px 12px 41px;color:var(--text);outline:none}.searchbox input:focus,.field input:focus{border-color:#92783c;box-shadow:0 0 0 3px #d8b45a16}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#111;min-height:220px}table{width:100%;border-collapse:collapse;text-align:left;min-width:650px}th{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#8f8c84;background:#171717;font-weight:750}th,td{padding:15px 17px;border-bottom:1px solid #252525}td{font-size:.85rem;color:#e7e4dc}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#171717}.person{display:flex;align-items:center;gap:10px}.person-avatar{width:33px;height:33px;border-radius:10px;background:#272319;color:var(--gold2);display:grid;place-items:center;font-weight:800}.person strong{display:block;font-size:.85rem}.person small{display:block;color:var(--muted);font-size:.74rem}.id-cell{font-family:ui-monospace,SFMono-Regular,monospace;color:#aaa;font-size:.78rem}.table-state{text-align:center!important;padding:40px 20px!important;color:var(--muted)!important}.table-state .spinner{margin:0 auto 10px}.table-state strong{display:block;color:var(--text);margin-bottom:4px}.row-actions{display:flex;gap:7px}.row-actions button{border:1px solid var(--line);background:#181818;border-radius:8px;padding:7px;color:#c9c6bd;display:grid;place-items:center}.row-actions button:hover{border-color:var(--gold);color:var(--gold)}.row-actions svg{width:16px;height:16px}
+.spinner{width:18px;height:18px;border:2px solid #554b32;border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.spin-inline{animation:spin .8s linear infinite}
+footer{margin-top:34px;padding-top:17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;color:#77746d;font-size:.75rem}
+.overlay{position:fixed;inset:0;background:#000b;backdrop-filter:blur(7px);z-index:20;display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .18s ease}.modal{width:min(100%,480px);max-height:90vh;overflow:auto;border:1px solid #39342a;border-radius:20px;background:#121212;box-shadow:0 24px 100px #000b;animation:rise .2s ease}.modal-head{padding:22px 23px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.modal-head h2{margin:4px 0;font-size:1.25rem}.modal-head p{margin:0;color:var(--muted);font-size:.82rem}.modal-body{padding:22px 23px}.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:15px 23px;border-top:1px solid var(--line)}.field{display:grid;gap:7px;margin-bottom:16px}.field label{font-size:.82rem;color:#d5d1c8;font-weight:650}.field input{width:100%;padding:12px 13px;border-radius:10px;border:1px solid #353535;background:#0d0d0d;color:var(--text);outline:none}.field-hint{font-size:.75rem;color:var(--muted)}.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 20%,#292113 0,#10100f 34%,#080808 70%)}.login-card{width:min(100%,430px);padding:31px;border:1px solid #383124;border-radius:22px;background:#111;box-shadow:0 25px 90px #0009}.login-brand{display:flex;justify-content:center;margin-bottom:20px}.login-card h1{text-align:center;font-size:1.65rem;letter-spacing:-.04em;margin:0 0 7px}.login-card>.muted{text-align:center;font-size:.87rem;margin:0 0 25px}.login-card .brandmark{width:54px;height:54px}.login-card .brandmark svg{width:34px;height:34px}.login-card .btn.primary{width:100%;padding:12px;margin-top:4px}.login-note{font-size:.75rem;color:#8d8980;text-align:center;margin:18px 0 0}.toast-area{position:fixed;right:20px;bottom:20px;z-index:40;display:grid;gap:9px;width:min(380px,calc(100vw - 40px))}.toast{padding:13px 15px;border-radius:12px;background:#1b1b1b;border:1px solid #3a3a3a;box-shadow:0 10px 30px #0008;font-size:.85rem;animation:rise .2s ease}.toast.error{border-color:#633333}.toast.success{border-color:#31553a}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.mobile-head,.mobile-nav{display:none}
+@media(max-width:1000px){.sidebar{width:215px}.main{margin-left:215px;padding:24px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid .wide{grid-column:1/-1}.user-pill .user-email{display:none}}
+@media(max-width:700px){.sidebar{display:none}.main{margin:0;padding:18px 15px 95px}.topbar{padding-bottom:18px}.top-title h1{font-size:1.35rem}.top-title .eyebrow{font-size:.62rem}.top-title p{font-size:.78rem}.top-actions{gap:6px}.top-actions .btn span{display:none}.top-actions .btn{width:40px;height:40px;padding:0}.user-pill{padding-left:8px;gap:6px}.user-pill .avatar{width:31px;height:31px}.content{padding-top:21px}.section-head{align-items:flex-start;flex-direction:column;gap:10px}.grid{grid-template-columns:1fr;gap:11px}.grid .wide{grid-column:auto}.card{padding:17px}.stat-value{font-size:1.8rem}.toolbar{align-items:stretch;flex-direction:column}.searchbox{max-width:none}.toolbar>.status-chip{align-self:flex-start}.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;inset:auto 0 0;z-index:10;padding:8px 7px calc(8px + env(safe-area-inset-bottom));background:#0d0d0df2;backdrop-filter:blur(14px);border-top:1px solid var(--line)}.mobile-nav button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 2px;border:0;background:transparent;color:#88857d;font-size:.65rem;border-radius:9px}.mobile-nav button.active{color:var(--gold2);background:#262116}.mobile-nav svg{width:20px;height:20px}footer{flex-direction:column;gap:4px}.modal{border-radius:17px}.modal-head,.modal-body{padding-left:18px;padding-right:18px}.modal-foot{padding:14px 18px}.login-card{padding:24px 20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+<symbol id="i-infinity" viewBox="0 0 24 24"><path d="M8.5 8.5 5.8 8a4 4 0 1 0 0 8c2.7 0 4.3-4 6.2-5.5s3.5-2.5 5.7-2.5a4 4 0 1 1 0 8c-2.8 0-4.4-4-6.3-5.5S8 8 5.8 8"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 18V5a3 3 0 0 0-5.8-1.1A4 4 0 0 0 4 11a4 4 0 0 0 2 7.5 3.5 3.5 0 0 0 6-2.5ZM12 8a3 3 0 0 1 5.8-1.1A4 4 0 0 1 20 14a4 4 0 0 1-2 7.5 3.5 3.5 0 0 1-6-2.5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></symbol>
+<symbol id="i-log-out" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></symbol>
+</svg>
+
+<div id="loginScreen" class="login-screen">
+  <form id="loginForm" class="login-card">
+    <div class="login-brand"><div class="brandmark"><svg><use href="#i-infinity"/></svg></div></div>
+    <div class="eyebrow" style="text-align:center;margin-bottom:8px">Espace administrateur</div>
+    <h1>Infinity Control Center</h1>
+    <p class="muted">Connectez-vous pour accéder au tableau de bord.</p>
+    <div id="loginError" class="message error hidden" role="alert" style="margin-bottom:16px"></div>
+    <div class="field"><label for="loginEmail">Adresse e-mail</label><input id="loginEmail" name="email" type="email" autocomplete="username" placeholder="admin@exemple.com" required></div>
+    <div class="field"><label for="loginPassword">Mot de passe</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required></div>
+    <button id="loginSubmit" class="btn primary" type="submit"><span id="loginButtonText">Se connecter</span><span id="loginSpinner" class="spinner hidden"></span></button>
+    <p class="login-note">Connexion sécurisée via le backend Infinity.</p>
+  </form>
+</div>
+
+<div id="dashboard" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand"><div class="brandmark"><svg><use href="#i-infinity"/></svg></div><div class="brandname">Infinity Control<small>Centre d’administration</small></div></div>
+    <div class="nav-label">Espace de travail</div>
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="active" data-view="overview"><svg><use href="#i-grid"/></svg><span>Vue générale</span></button>
+      <button data-view="users"><svg><use href="#i-users"/></svg><span>Utilisateurs</span><small id="navUserCount" class="count">—</small></button>
+      <button data-view="ai"><svg><use href="#i-brain"/></svg><span>Intelligence artificielle</span></button>
+      <button data-view="security"><svg><use href="#i-shield"/></svg><span>Sécurité</span></button>
+    </nav>
+    <div class="side-bottom"><div class="backend-mini"><span id="sideDot" class="dot"></span><span id="sideBackend">Backend non vérifié</span></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="top-title"><div class="eyebrow">Infinity / Administration</div><h1 id="pageTitle">Vue générale</h1><p id="pageSubtitle">Vue d’ensemble de votre espace de contrôle.</p></div>
+      <div class="top-actions">
+        <button id="refreshBtn" class="btn" type="button" title="Actualiser les données"><svg><use href="#i-refresh"/></svg><span>Actualiser</span></button>
+        <div class="user-pill"><div class="avatar">A</div><div><strong>Administrateur</strong><div id="adminEmail" class="muted user-email" style="font-size:.72rem">Session active</div></div></div>
+        <button id="logoutBtn" class="icon-btn" type="button" title="Déconnexion" aria-label="Déconnexion"><svg><use href="#i-log-out"/></svg></button>
+      </div>
+    </header>
+    <div id="globalError" class="message error hidden" role="alert" style="margin-top:18px"></div>
+    <section id="view-overview" class="content view">
+      <div class="section-head"><div><div class="eyebrow">Tableau de bord</div><h2>Vue générale</h2><p>État actuel des services connectés.</p></div><span class="status-chip"><span id="overviewDot" class="dot"></span><span id="overviewStatus">Connexion à vérifier</span></span></div>
+      <div class="grid">
+        <article class="card"><div class="stat-top"><span>Utilisateurs enregistrés</span><span class="stat-icon"><svg><use href="#i-users"/></svg></span></div><div id="totalUsers" class="stat-value">—</div><div class="stat-foot">Valeur fournie par l’API utilisateurs</div></article>
+        <article class="card"><div class="stat-top"><span>État du backend</span><span class="stat-icon"><svg><use href="#i-server"/></svg></span></div><div id="backendValue" class="stat-value" style="font-size:1.55rem">À vérifier</div><div id="backendDetail" class="stat-foot">En attente d’une requête authentifiée</div></article>
+        <article class="card"><div class="stat-top"><span>Dernière actualisation</span><span class="stat-icon"><svg><use href="#i-clock"/></svg></span></div><div id="lastRefresh" class="stat-value" style="font-size:1.3rem">Jamais</div><div class="stat-foot">Heure locale de cet appareil</div></article>
+        <article class="card wide"><h3 class="panel-title">État des services</h3><p class="panel-desc">Informations confirmées par les réponses du backend.</p>
+          <div class="backend-row"><div class="backend-info"><span id="apiDot" class="dot"></span><div><strong>API des utilisateurs</strong><small id="apiStatus">Non vérifiée</small></div></div><span id="apiChip" class="status-chip">En attente</span></div>
+          <div class="backend-row"><div class="backend-info"><span class="dot"></span><div><strong>Statistiques détaillées</strong><small>Requiert une API dédiée</small></div></div><span class="status-chip">Non disponible</span></div>
+          <div id="overviewError" class="message error hidden" role="alert" style="margin-top:14px"></div>
+        </article>
+        <article class="card wide"><h3 class="panel-title">Statistiques futures</h3><p class="panel-desc">Les données ne seront affichées qu’après connexion des API correspondantes.</p><div class="placeholder"><svg><use href="#i-grid"/></svg><strong>Aucune statistique supplémentaire disponible</strong><p>Les graphiques d’activité et les tendances apparaîtront ici lorsque des endpoints réels seront disponibles.</p></div></article>
+      </div>
+    </section>
+    <section id="view-users" class="content view hidden">
+      <div class="section-head"><div><div class="eyebrow">Gestion des comptes</div><h2>Utilisateurs</h2><p>Consultez les comptes renvoyés par le backend.</p></div><span id="usersCount" class="status-chip">0 résultat</span></div>
+      <div class="toolbar"><label class="searchbox"><svg><use href="#i-search"/></svg><input id="userSearch" type="search" placeholder="Rechercher par nom, e-mail ou identifiant…" autocomplete="off" aria-label="Rechercher des utilisateurs"></label><span id="usersState" class="status-chip">En attente</span></div>
+      <div id="usersError" class="message error hidden" role="alert" style="margin-bottom:14px"></div>
+      <div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>E-mail</th><th>Identifiant</th><th>Actions</th></tr></thead><tbody id="usersTable"><tr><td class="table-state" colspan="4">Connectez-vous pour charger les utilisateurs.</td></tr></tbody></table></div>
+      <div class="message" style="margin-top:14px">Les actions de suspension, réactivation et suppression sont désactivées : aucun endpoint correspondant n’est configuré. Aucune modification de compte ne sera simulée.</div>
+    </section>
+    <section id="view-ai" class="content view hidden">
+      <div class="section-head"><div><div class="eyebrow">Observabilité</div><h2>Intelligence artificielle</h2><p>Préparation du suivi de l’utilisation des services IA.</p></div><span class="status-chip">API à connecter</span></div>
+      <div class="grid">
+        <article class="card"><div class="stat-top"><span>Requêtes</span><span class="stat-icon"><svg><use href="#i-brain"/></svg></span></div><div class="stat-value">—</div><div class="stat-foot">API à connecter</div></article>
+        <article class="card"><div class="stat-top"><span>Erreurs</span><span class="stat-icon"><svg><use href="#i-shield"/></svg></span></div><div class="stat-value">—</div><div class="stat-foot">API à connecter</div></article>
+        <article class="card"><div class="stat-top"><span>Consommation</span><span class="stat-icon"><svg><use href="#i-server"/></svg></span></div><div class="stat-value">—</div><div class="stat-foot">API à connecter</div></article>
+        <article class="card wide"><h3 class="panel-title">Limites d’utilisation</h3><p class="panel-desc">Aucune limite n’est affichée tant que la source de données n’est pas connectée.</p><div class="placeholder"><svg><use href="#i-brain"/></svg><strong>API à connecter</strong><p>Les requêtes, erreurs, consommations et limites seront présentées ici à partir de données réelles. Aucune statistique n’est estimée.</p></div></article>
+      </div>
+    </section>
+    <section id="view-security" class="content view hidden">
+      <div class="section-head"><div><div class="eyebrow">Protection et audit</div><h2>Sécurité</h2><p>État des fonctions de sécurité et des intégrations manquantes.</p></div><span class="status-chip">Configuration partielle</span></div>
+      <div class="grid">
+        <article class="card"><div class="stat-top"><span>Sessions</span><span class="stat-icon"><svg><use href="#i-lock"/></svg></span></div><div class="stat-value" style="font-size:1.25rem">API à connecter</div><div class="stat-foot">Aucune liste de sessions disponible</div></article>
+        <article class="card"><div class="stat-top"><span>Connexions administrateur</span><span class="stat-icon"><svg><use href="#i-users"/></svg></span></div><div class="stat-value" style="font-size:1.25rem">API à connecter</div><div class="stat-foot">Aucun historique disponible</div></article>
+        <article class="card"><div class="stat-top"><span>Journal d’activité</span><span class="stat-icon"><svg><use href="#i-clock"/></svg></span></div><div class="stat-value" style="font-size:1.25rem">API à connecter</div><div class="stat-foot">Aucun journal disponible</div></article>
+        <article class="card wide"><h3 class="panel-title">Actions de sécurité</h3><p class="panel-desc">Les actions sensibles ne sont activées que lorsqu’une API backend réelle existe.</p>
+          <div class="backend-row"><div class="backend-info"><span class="stat-icon"><svg><use href="#i-lock"/></svg></span><div><strong>Révoquer une session</strong><small>Endpoint de révocation non configuré</small></div></div><button class="btn small" disabled title="API non disponible">Indisponible</button></div>
+          <div class="backend-row"><div class="backend-info"><span class="stat-icon"><svg><use href="#i-eye"/></svg></span><div><strong>Consulter le journal d’activité</strong><small>Endpoint d’audit non configuré</small></div></div><button class="btn small" disabled title="API non disponible">Indisponible</button></div>
+          <div class="message" style="margin-top:14px">La déconnexion ci-dessus efface uniquement la session locale de cette interface. Elle ne révoque pas le jeton côté serveur.</div>
+        </article>
+      </div>
+    </section>
+    <footer><span>© <span id="year"></span> Infinity Control Center</span><span>Interface d’administration · Connexion API réelle</span></footer>
+  </main>
+  <nav class="mobile-nav" aria-label="Navigation mobile">
+    <button class="active" data-view="overview"><svg><use href="#i-grid"/></svg><span>Vue générale</span></button>
+    <button data-view="users"><svg><use href="#i-users"/></svg><span>Utilisateurs</span></button>
+    <button data-view="ai"><svg><use href="#i-brain"/></svg><span>IA</span></button>
+    <button data-view="security"><svg><use href="#i-shield"/></svg><span>Sécurité</span></button>
+  </nav>
+</div>
+
+<div id="modalRoot"></div><div id="toastArea" class="toast-area" aria-live="polite" aria-atomic="true"></div>
+<script>
+(() => {
+  'use strict';
+  const API_URL = 'https://aur-x-backend.vercel.app/api/users/';
+  const SESSION_KEY = 'infinity_admin_session';
+  const $ = (id) => document.getElementById(id);
+  const state = { session: null, users: [], usersLoaded: false, usersLoading: false, lastRefresh: null, view: 'overview', requestId: 0 };
+
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function safeText(value) { return typeof value === 'string' || typeof value === 'number' ? String(value) : ''; }
+  function initials(name) {
+    const parts = safeText(name).trim().split(/\s+/).filter(Boolean);
+    return (parts.length ? parts.slice(0,2).map(p => Array.from(p)[0]).join('') : '?').toUpperCase();
+  }
+  function formatDate(date) {
+    if (!date) return 'Jamais';
+    try { return new Intl.DateTimeFormat('fr-FR', {dateStyle:'medium',timeStyle:'short'}).format(new Date(date)); }
+    catch { return 'Indisponible'; }
+  }
+  function readSession() {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const session = JSON.parse(raw);
+      if (!session || typeof session.token !== 'string' || !session.token || !Number.isFinite(session.expiresAt)) {
+        sessionStorage.removeItem(SESSION_KEY); return null;
+      }
+      if (Date.now() >= session.expiresAt) { sessionStorage.removeItem(SESSION_KEY); return null; }
+      return session;
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY); return null;
+    }
+  }
+  function saveSession(session) {
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); return true; }
+    catch { showLoginError('Le stockage de session est indisponible dans ce navigateur. Autorisez le stockage de session puis réessayez.'); return false; }
+  }
+  function serverMessage(data, fallback) {
+    if (data && typeof data === 'object') {
+      for (const key of ['message','error','detail']) {
+        if (typeof data[key] === 'string' && data[key].trim()) return data[key].trim();
+      }
+    }
+    return fallback;
+  }
+  async function requestJSON(url, options = {}) {
+    let response;
+    try { response = await fetch(url, options); }
+    catch { throw new Error('Impossible de joindre le backend. Vérifiez votre connexion réseau et la disponibilité du serveur.'); }
+    let data;
+    try { data = await response.json(); }
+    catch { throw new Error('Le backend a renvoyé une réponse JSON invalide ou vide.'); }
+    if (!response.ok) throw new Error(serverMessage(data, `Erreur serveur HTTP ${response.status}.`));
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Format de réponse inattendu : un objet JSON était attendu.');
+    return data;
+  }
+  function showLoginError(message) {
+    $('loginError').textContent = message;
+    $('loginError').classList.remove('hidden');
+  }
+  function clearLoginError() { $('loginError').textContent = ''; $('loginError').classList.add('hidden'); }
+  function setLoginBusy(busy) {
+    $('loginSubmit').disabled = busy;
+    $('loginButtonText').textContent = busy ? 'Connexion en cours…' : 'Se connecter';
+    $('loginSpinner').classList.toggle('hidden', !busy);
+  }
+  function showLogin() {
+    $('dashboard').classList.add('hidden');
+    $('loginScreen').classList.remove('hidden');
+    $('loginPassword').focus();
+  }
+  function showDashboard() {
+    $('loginScreen').classList.add('hidden');
+    $('dashboard').classList.remove('hidden');
+    $('adminEmail').textContent = state.session?.email || 'Session active';
+    setView(state.view || 'overview');
+  }
+  function toast(message, type = '') {
+    const node = document.createElement('div');
+    node.className = `toast ${type}`.trim();
+    node.textContent = message;
+    $('toastArea').appendChild(node);
+    window.setTimeout(() => node.remove(), 4500);
+  }
+  function setBackendStatus(status, detail = '') {
+    const online = status === 'online';
+    const offline = status === 'offline';
+    $('sideDot').className = `dot ${online ? 'online' : offline ? 'offline' : ''}`;
+    $('overviewDot').className = `dot ${online ? 'online' : offline ? 'offline' : ''}`;
+    $('apiDot').className = `dot ${online ? 'online' : offline ? 'offline' : ''}`;
+    $('sideBackend').textContent = online ? 'Backend accessible' : offline ? 'Backend inaccessible' : 'Backend non vérifié';
+    $('overviewStatus').textContent = online ? 'Connecté' : offline ? 'Erreur de connexion' : 'Connexion à vérifier';
+    $('backendValue').textContent = online ? 'Connecté' : offline ? 'Indisponible' : 'À vérifier';
+    $('backendDetail').textContent = detail || (online ? 'Réponse authentifiée reçue' : offline ? 'Échec de la requête API' : 'En attente d’une requête authentifiée');
+    $('apiStatus').textContent = online ? 'Réponse API reçue et validée' : offline ? (detail || 'La requête API a échoué') : 'Non vérifiée';
+    $('apiChip').textContent = online ? 'Opérationnel' : offline ? 'Erreur' : 'En attente';
+  }
+  function setGlobalError(message) {
+    $('globalError').textContent = message || '';
+    $('globalError').classList.toggle('hidden', !message);
+  }
+  function setView(view) {
+    const allowed = ['overview','users','ai','security'];
+    if (!allowed.includes(view)) view = 'overview';
+    state.view = view;
+    document.querySelectorAll('.view').forEach(el => el.classList.toggle('hidden', el.id !== `view-${view}`));
+    document.querySelectorAll('[data-view]').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+    const labels = {
+      overview:['Vue générale','Vue d’ensemble de votre espace de contrôle.'],
+      users:['Utilisateurs','Consultez et recherchez les comptes utilisateurs.'],
+      ai:['Intelligence artificielle','Observabilité et suivi des services IA.'],
+      security:['Sécurité','Sessions, connexions administrateur et journal d’activité.']
+    };
+    $('pageTitle').textContent = labels[view][0];
+    $('pageSubtitle').textContent = labels[view][1];
+    if (view === 'users' && !state.usersLoaded && !state.usersLoading) loadUsers();
+  }
+  function setUsersTableLoading() {
+    $('usersTable').innerHTML = '<tr><td class="table-state" colspan="4"><div class="spinner"></div><strong>Chargement des utilisateurs…</strong>Récupération des données depuis le backend.</td></tr>';
+    $('usersState').textContent = 'Chargement…';
+  }
+  function showUsersError(message) {
+    $('usersError').textContent = message;
+    $('usersError').classList.remove('hidden');
+    $('usersTable').innerHTML = `<tr><td class="table-state" colspan="4"><strong>Impossible de charger les utilisateurs</strong>${escapeHTML(message)}<div style="margin-top:13px"><button class="btn small" id="retryUsers" type="button">Réessayer</button></div></td></tr>`;
+    $('retryUsers')?.addEventListener('click', loadUsers);
+    $('usersState').textContent = 'Erreur';
+  }
+  function renderUsers() {
+    const query = $('userSearch').value.trim().toLocaleLowerCase('fr');
+    const filtered = state.users.filter(user => [user.name,user.email,user.id].some(value => safeText(value).toLocaleLowerCase('fr').includes(query)));
+    $('usersCount').textContent = `${filtered.length} résultat${filtered.length !== 1 ? 's' : ''}`;
+    $('navUserCount').textContent = String(state.users.length);
+    $('usersState').textContent = state.usersLoading ? 'Chargement…' : 'Données chargées';
+    if (!filtered.length) {
+      const title = state.users.length ? 'Aucun résultat' : 'Aucun utilisateur';
+      const desc = state.users.length ? 'Essayez un autre terme de recherche.' : 'Le backend n’a renvoyé aucun utilisateur.';
+      $('usersTable').innerHTML = `<tr><td class="table-state" colspan="4"><strong>${title}</strong>${desc}</td></tr>`;
+      return;
+    }
+    $('usersTable').innerHTML = filtered.map((user, index) => {
+      const name = safeText(user.name) || 'Nom indisponible';
+      const email = safeText(user.email) || 'E-mail indisponible';
+      const id = safeText(user.id) || 'Identifiant indisponible';
+      return `<tr>
+        <td><div class="person"><div class="person-avatar">${escapeHTML(initials(name))}</div><div><strong>${escapeHTML(name)}</strong><small>Compte utilisateur</small></div></div></td>
+        <td>${escapeHTML(email)}</td><td class="id-cell">${escapeHTML(id)}</td>
+        <td><div class="row-actions"><button type="button" data-detail-index="${index}" title="Voir la fiche" aria-label="Voir la fiche de ${escapeHTML(name)}"><svg><use href="#i-eye"/></svg></button><button type="button" disabled title="Endpoint de suspension non configuré" aria-label="Suspension indisponible"><svg><use href="#i-lock"/></svg></button></div></td>
+      </tr>`;
+    }).join('');
+    // L'index est résolu à partir de la liste filtrée au moment du rendu.
+    $('usersTable').querySelectorAll('[data-detail-index]').forEach((button, index) => {
+      button.addEventListener('click', () => openUserModal(filtered[index]));
+    });
+  }
+  async function loadUsers() {
+    if (!state.session || state.usersLoading) return;
+    if (Date.now() >= state.session.expiresAt) { expireSession('Votre session administrateur a expiré. Veuillez vous reconnecter.'); return; }
+    state.usersLoading = true;
+    state.usersLoaded = false;
+    const requestId = ++state.requestId;
+    $('usersError').classList.add('hidden');
+    setGlobalError('');
+    setUsersTableLoading();
+    try {
+      const data = await requestJSON(API_URL, { method:'GET', headers:{'Authorization':`Bearer ${state.session.token}`, 'Accept':'application/json'} });
+      if (requestId !== state.requestId) return;
+      if (data.success !== true) throw new Error(serverMessage(data, 'Le backend n’a pas confirmé la récupération des utilisateurs (success n’est pas true).'));
+      if (!Array.isArray(data.users)) throw new Error('Format de réponse inattendu : le champ "users" doit être un tableau.');
+      if (data.totalUsers !== undefined && (!Number.isFinite(data.totalUsers) || data.totalUsers < 0)) throw new Error('Format de réponse inattendu : "totalUsers" doit être un nombre positif ou nul.');
+      const validUsers = data.users.filter(user => user && typeof user === 'object' && !Array.isArray(user));
+      state.users = validUsers.map(user => ({id:safeText(user.id),name:safeText(user.name),email:safeText(user.email)}));
+      state.usersLoaded = true;
+      state.lastRefresh = new Date();
+      $('lastRefresh').textContent = formatDate(state.lastRefresh);
+      $('totalUsers').textContent = data.totalUsers !== undefined ? String(data.totalUsers) : String(state.users.length);
+      setBackendStatus('online', 'GET authentifié validé');
+      $('overviewError').classList.add('hidden');
+      renderUsers();
+    } catch (error) {
+      if (requestId !== state.requestId) return;
+      const message = error instanceof Error ? error.message : 'Une erreur inattendue est survenue.';
+      if (/401|403|token|session|authentification|unauthori[sz]ed|forbidden/i.test(message)) {
+        expireSession(`Accès refusé ou session invalide. ${message}`);
+        return;
+      }
+      state.users = [];
+      state.usersLoaded = false;
+      setBackendStatus('offline', message);
+      $('overviewError').textContent = message;
+      $('overviewError').classList.remove('hidden');
+      showUsersError(message);
+      setGlobalError(`Erreur lors de la récupération des utilisateurs : ${message}`);
+      toast(message, 'error');
+    } finally {
+      if (requestId === state.requestId) state.usersLoading = false;
+    }
+  }
+  function openUserModal(user) {
+    if (!user) return;
+    const root = $('modalRoot');
+    root.innerHTML = `<div class="overlay" id="userOverlay" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle"><div class="modal-head"><div><div class="eyebrow">Fiche utilisateur</div><h2 id="userModalTitle">${escapeHTML(user.name || 'Nom indisponible')}</h2><p>Détails retournés par l’API</p></div><button class="icon-btn" id="closeUserModal" type="button" aria-label="Fermer"><svg><use href="#i-x"/></svg></button></div><div class="modal-body"><div class="field"><label>Nom</label><div class="message">${escapeHTML(user.name || 'Non fourni')}</div></div><div class="field"><label>Adresse e-mail</label><div class="message">${escapeHTML(user.email || 'Non fournie')}</div></div><div class="field" style="margin-bottom:0"><label>Identifiant</label><div class="message" style="overflow-wrap:anywhere">${escapeHTML(user.id || 'Non fourni')}</div></div><div class="message" style="margin-top:17px">Suspension, réactivation et suppression sont indisponibles : aucun endpoint backend n’est configuré.</div></div><div class="modal-foot"><button class="btn" id="closeUserModalBottom" type="button">Fermer</button></div></section></div>`;
+    const close = () => { root.innerHTML = ''; };
+    $('closeUserModal').addEventListener('click', close);
+    $('closeUserModalBottom').addEventListener('click', close);
+    $('userOverlay').addEventListener('click', e => { if (e.target.id === 'userOverlay') close(); });
+    document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+    $('closeUserModal').focus();
+  }
+  function expireSession(message) {
+    state.requestId++;
+    state.session = null; state.users = []; state.usersLoaded = false; state.usersLoading = false;
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+    setBackendStatus('offline', message);
+    showLogin();
+    showLoginError(message);
+  }
+  async function handleLogin(event) {
+    event.preventDefault();
+    clearLoginError();
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    if (!email || !password) { showLoginError('Veuillez saisir votre adresse e-mail et votre mot de passe.'); return; }
+    setLoginBusy(true);
+    try {
+      const data = await requestJSON(API_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({email,password})
+      });
+      if (data.success !== true) throw new Error(serverMessage(data, 'Connexion refusée : le serveur n’a pas confirmé success: true.'));
+      if (typeof data.token !== 'string' || !data.token.trim()) throw new Error('Réponse de connexion invalide : le jeton est absent.');
+      let expiresAt;
+      if (data.expiresAt !== undefined) {
+        expiresAt = typeof data.expiresAt === 'number' ? data.expiresAt : Date.parse(data.expiresAt);
+        if (!Number.isFinite(expiresAt)) throw new Error('Réponse de connexion invalide : expiresAt n’est pas une date valide.');
+      } else if (Number.isFinite(data.expiresIn) && data.expiresIn > 0) {
+        expiresAt = Date.now() + data.expiresIn;
+      } else {
+        throw new Error('Réponse de connexion invalide : expiresAt ou expiresIn est requis.');
+      }
+      if (expiresAt <= Date.now()) throw new Error('Le serveur a renvoyé une session déjà expirée. Vérifiez la configuration du backend.');
+      const session = {token:data.token, expiresAt, email:typeof data.email === 'string' ? data.email : email};
+      if (!saveSession(session)) return;
+      state.session = session;
+      state.users = []; state.usersLoaded = false; state.lastRefresh = null;
+      $('totalUsers').textContent = '—'; $('lastRefresh').textContent = 'Jamais';
+      showDashboard();
+      toast('Connexion administrateur validée.', 'success');
+      await loadUsers();
+    } catch (error) {
+      showLoginError(error instanceof Error ? error.message : 'Une erreur inattendue est survenue pendant la connexion.');
+    } finally {
+      setLoginBusy(false);
+    }
+  }
+  function logout() {
+    state.requestId++;
+    state.session = null; state.users = []; state.usersLoaded = false; state.usersLoading = false;
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+    $('loginPassword').value = '';
+    $('usersTable').innerHTML = '<tr><td class="table-state" colspan="4">Connectez-vous pour charger les utilisateurs.</td></tr>';
+    $('totalUsers').textContent = '—'; $('lastRefresh').textContent = 'Jamais';
+    $('navUserCount').textContent = '—'; $('usersCount').textContent = '0 résultat';
+    setGlobalError(''); $('usersError').classList.add('hidden'); $('overviewError').classList.add('hidden');
+    setBackendStatus('unknown', 'Session locale effacée. Le jeton n’a pas été révoqué côté serveur.');
+    clearLoginError(); showLogin();
+    toast('Session locale effacée. Le jeton n’a pas été révoqué côté serveur.');
+  }
+  $('loginForm').addEventListener('submit', handleLogin);
+  $('logoutBtn').addEventListener('click', logout);
+  $('refreshBtn').addEventListener('click', async () => {
+    if (!state.session) { toast('Veuillez vous connecter pour actualiser les données.', 'error'); showLogin(); return; }
+    if (state.view === 'users' || state.view === 'overview') await loadUsers();
+    else toast('Aucune API de statistiques n’est configurée pour cette section.');
+  });
+  $('userSearch').addEventListener('input', () => { if (state.usersLoaded) renderUsers(); });
+  document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+  $('year').textContent = String(new Date().getFullYear());
+
+  state.session = readSession();
+  if (state.session) {
+    showDashboard();
+    setBackendStatus('unknown', 'Validation de la session en cours');
+    loadUsers();
+  } else {
+    showLogin();
+    setBackendStatus('unknown');
+  }
+})();
+</script>
+</body>
+</html>
